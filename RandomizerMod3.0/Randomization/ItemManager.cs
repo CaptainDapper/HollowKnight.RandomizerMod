@@ -164,6 +164,14 @@ namespace RandomizerMod.Randomization
             return locations;
         }
 
+        public void QueueUpdate(string newThing, ProgressionManager _pm = null)
+        {
+            if (_pm != null) pm = _pm;
+
+            pm.Add(newThing);
+            updateQueue.Enqueue(newThing);
+        }
+
         public void ResetReachableLocations()
         {
             reachableLocations = new HashSet<string>();
@@ -322,7 +330,7 @@ namespace RandomizerMod.Randomization
                 return false;
             }
 
-            for (int i=0; i < unplacedProgression.Count; i++)
+            for (int i = 0; i < unplacedProgression.Count; i++)
             {
                 string item = unplacedProgression[i];
                 pm.Add(item);
@@ -340,7 +348,7 @@ namespace RandomizerMod.Randomization
                     if (found) return item;
                     foreach (string transition in tempProgression) pm.Remove(transition);
                 }
-                
+
                 pm.Remove(item);
             }
             return null;
@@ -371,9 +379,7 @@ namespace RandomizerMod.Randomization
             if (LogicManager.GetItemDef(item).progression)
             {
                 unplacedProgression.Remove(item);
-                pm.Add(item);
-                updateQueue.Enqueue(item);
-                UpdateReachableLocations();
+                UpdateReachableLocations(item);
             }
             else unplacedItems.Remove(item);
         }
@@ -390,9 +396,7 @@ namespace RandomizerMod.Randomization
         {
             unplacedProgression.Remove(item);
             standbyProgression.Add(item);
-            pm.Add(item);
-            updateQueue.Enqueue(item);
-            UpdateReachableLocations();
+            UpdateReachableLocations(item);
         }
 
         public void PlaceJunkItemToStandby(string item, string location)
@@ -406,7 +410,7 @@ namespace RandomizerMod.Randomization
         private void LogDataConflicts()
         {
             string stuff = pm.ListObtainedProgression();
-            foreach(string _item in stuff.Split(','))
+            foreach (string _item in stuff.Split(','))
             {
                 string item = _item.Trim();
                 if (string.IsNullOrEmpty(item)) continue;

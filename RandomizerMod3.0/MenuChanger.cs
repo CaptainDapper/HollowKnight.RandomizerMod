@@ -24,9 +24,9 @@ namespace RandomizerMod
 
             Object.Destroy(playScreen.topFleur.gameObject);
 
-            MenuButton classic = (MenuButton) playScreen.defaultHighlight;
-            MenuButton steel = (MenuButton) classic.FindSelectableOnDown();
-            MenuButton back = (MenuButton) steel.FindSelectableOnDown();
+            MenuButton classic = (MenuButton)playScreen.defaultHighlight;
+            MenuButton steel = (MenuButton)classic.FindSelectableOnDown();
+            MenuButton back = (MenuButton)steel.FindSelectableOnDown();
 
             GameObject parent = steel.transform.parent.gameObject;
 
@@ -46,7 +46,7 @@ namespace RandomizerMod
             startNormalBtn.transform.localScale = 
                 startSteelNormalBtn.transform.localScale =
                     startSteelRandoBtn.transform.localScale = */
-                    startRandoBtn.transform.localScale = new Vector2(0.75f, 0.75f);
+            startRandoBtn.transform.localScale = new Vector2(0.75f, 0.75f);
 
             MenuButton backBtn = back.Clone("Back", MenuButton.MenuButtonType.Proceed, new Vector2(0, -100), "Back");
 
@@ -54,10 +54,10 @@ namespace RandomizerMod
             //RandoMenuItem<string> gameTypeBtn = new RandoMenuItem<string>(back, new Vector2(0, 600), "Game Type", "Normal", "Steel Soul");
 
             RandoMenuItem<string> presetPoolsBtn = new RandoMenuItem<string>(back, new Vector2(900, 1040), "Preset", "Progressive", "Completionist", "Junk Pit", "Custom");
-            RandoMenuItem<bool> RandoDreamersBtn = new RandoMenuItem<bool>(back, new Vector2(900, 960), "Dreamers", true);
-            RandoMenuItem<bool> RandoSkillsBtn = new RandoMenuItem<bool>(back, new Vector2(900, 880), "Skills", true);
-            RandoMenuItem<bool> RandoCharmsBtn = new RandoMenuItem<bool>(back, new Vector2(900, 800), "Charms", true);
-            RandoMenuItem<bool> RandoKeysBtn = new RandoMenuItem<bool>(back, new Vector2(900, 720), "Keys", true);
+            RandoMenuItem<bool> RandoDreamersBtn = new RandoMenuItem<bool>(back, new Vector2(900, 960), "Dreamers", true, false);
+            RandoMenuItem<bool> RandoSkillsBtn = new RandoMenuItem<bool>(back, new Vector2(900, 880), "Skills", true, false);
+            RandoMenuItem<bool> RandoCharmsBtn = new RandoMenuItem<bool>(back, new Vector2(900, 800), "Charms", true, false);
+            RandoMenuItem<bool> RandoKeysBtn = new RandoMenuItem<bool>(back, new Vector2(900, 720), "Keys", true, false);
             RandoMenuItem<bool> RandoGeoChestsBtn = new RandoMenuItem<bool>(back, new Vector2(900, 640), "Geo Chests", false, true);
             RandoMenuItem<bool> RandoMaskBtn = new RandoMenuItem<bool>(back, new Vector2(900, 560), "Mask Shards", false, true);
             RandoMenuItem<bool> RandoVesselBtn = new RandoMenuItem<bool>(back, new Vector2(900, 480), "Vessel Fragments", false, true);
@@ -81,7 +81,7 @@ namespace RandomizerMod
             RandoMenuItem<bool> EarlyGeoBtn = new RandoMenuItem<bool>(back, new Vector2(-900, 120), "Early Geo", true, false);
             RandoMenuItem<bool> jijiBtn = new RandoMenuItem<bool>(back, new Vector2(-900, 40), "Jiji Hints", true, false);
             RandoMenuItem<bool> quirrelBtn = new RandoMenuItem<bool>(back, new Vector2(-900, -40), "Quirrel Hints", true, false);
-            
+
 
             RandoMenuItem<string> modeBtn = new RandoMenuItem<string>(back, new Vector2(0, 1040), "Mode", "Item Randomizer", "Area Randomizer", "Connected-Area Room Randomizer", "Room Randomizer");
             RandoMenuItem<string> cursedBtn = new RandoMenuItem<string>(back, new Vector2(0, 960), "Cursed", "no", "noo", "noooo", "noooooooo", "noooooooooooooooo", "Oh yeah");
@@ -161,7 +161,7 @@ namespace RandomizerMod
             EarlyGeoBtn.Button.SetNavigation(lemmBtn.Button, startRandoBtn, jijiBtn.Button, EarlyGeoBtn.Button);
             jijiBtn.Button.SetNavigation(EarlyGeoBtn.Button, startRandoBtn, quirrelBtn.Button, jijiBtn.Button);
             quirrelBtn.Button.SetNavigation(jijiBtn.Button, startRandoBtn, presetSkipsBtn.Button, quirrelBtn.Button);
-            
+
 
             presetPoolsBtn.Button.SetNavigation(RandoSpoilerBtn.Button, presetPoolsBtn.Button, RandoDreamersBtn.Button, startRandoBtn);
             RandoDreamersBtn.Button.SetNavigation(presetPoolsBtn.Button, RandoDreamersBtn.Button, RandoSkillsBtn.Button, startRandoBtn);
@@ -178,6 +178,29 @@ namespace RandomizerMod
             RandoSpoilerBtn.Button.SetNavigation(RandoRelicsBtn.Button, RandoSpoilerBtn.Button, presetPoolsBtn.Button, startRandoBtn);
 
             // Setup event for changing difficulty settings buttons
+            void ModeSettingChanged(RandoMenuItem<string> item)
+            {
+                //"Item Randomizer", "Area Randomizer", "Connected-Area Room Randomizer", "Room Randomizer"
+                if (item.CurrentSelection == "Item Randomizer")
+                {
+                    RandoDreamersBtn.Unlock();
+                    RandoSkillsBtn.Unlock();
+                    RandoCharmsBtn.Unlock();
+                    RandoKeysBtn.Unlock();
+                }
+                else
+                {
+                    RandoDreamersBtn.SetSelection(true);
+                    RandoSkillsBtn.SetSelection(true);
+                    RandoCharmsBtn.SetSelection(true);
+                    RandoKeysBtn.SetSelection(true);
+                    RandoDreamersBtn.Lock();
+                    RandoSkillsBtn.Lock();
+                    RandoCharmsBtn.Lock();
+                    RandoKeysBtn.Lock();
+                }
+            }
+
             void UpdateSkipsButtons(RandoMenuItem<string> item)
             {
                 switch (item.CurrentSelection)
@@ -280,6 +303,8 @@ namespace RandomizerMod
                 presetPoolsBtn.SetSelection("Custom");
             }
 
+            modeBtn.Changed += ModeSettingChanged;
+
             presetSkipsBtn.Changed += UpdateSkipsButtons;
             presetPoolsBtn.Changed += UpdatePoolPreset;
 
@@ -356,12 +381,12 @@ namespace RandomizerMod
                 {
                     RandomizerMod.Instance.Settings.Jiji = jijiBtn.CurrentSelection;
                     RandomizerMod.Instance.Settings.Quirrel = quirrelBtn.CurrentSelection;
-                    
 
-                    RandomizerMod.Instance.Settings.RandomizeDreamers = true;
-                    RandomizerMod.Instance.Settings.RandomizeSkills = true;
-                    RandomizerMod.Instance.Settings.RandomizeCharms = true;
-                    RandomizerMod.Instance.Settings.RandomizeKeys = true;
+
+                    RandomizerMod.Instance.Settings.RandomizeDreamers = RandoDreamersBtn.CurrentSelection;
+                    RandomizerMod.Instance.Settings.RandomizeSkills = RandoSkillsBtn.CurrentSelection;
+                    RandomizerMod.Instance.Settings.RandomizeCharms = RandoCharmsBtn.CurrentSelection;
+                    RandomizerMod.Instance.Settings.RandomizeKeys = RandoKeysBtn.CurrentSelection;
                     RandomizerMod.Instance.Settings.RandomizeGeoChests = RandoGeoChestsBtn.CurrentSelection;
                     RandomizerMod.Instance.Settings.RandomizeMaskShards = RandoMaskBtn.CurrentSelection;
                     RandomizerMod.Instance.Settings.RandomizeVesselFragments = RandoVesselBtn.CurrentSelection;
@@ -424,6 +449,7 @@ namespace RandomizerMod
             private readonly T[] _selections;
             private readonly Text _text;
             private int _currentSelection;
+            private bool _locked = false;
 
             public RandoMenuItem(MenuButton baseObj, Vector2 position, string name, params T[] values)
             {
@@ -473,6 +499,8 @@ namespace RandomizerMod
 
             public void SetSelection(T obj)
             {
+                if (_locked) return;
+
                 for (int i = 0; i < _selections.Length; i++)
                 {
                     if (_selections[i].Equals(obj))
@@ -487,6 +515,8 @@ namespace RandomizerMod
 
             private void GotoNext(BaseEventData data = null)
             {
+                if (_locked) return;
+
                 _currentSelection++;
                 if (_currentSelection >= _selections.Length)
                 {
@@ -505,6 +535,18 @@ namespace RandomizerMod
                 {
                     ChangedInternal?.Invoke(this);
                 }
+            }
+
+            internal void Lock()
+            {
+                _text.color = Color.grey;
+                _locked = true;
+            }
+
+            internal void Unlock()
+            {
+                _text.color = Color.white;
+                _locked = false;
             }
         }
     }
