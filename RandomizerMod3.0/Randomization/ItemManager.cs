@@ -14,6 +14,9 @@ namespace RandomizerMod.Randomization
         public static Dictionary<string, string> nonShopItems;
         public static Dictionary<string, List<string>> shopItems;
 
+        public List<string> vanillaLocationsObtained;
+        public List<string> vanillaProgressionLocations;
+        public Dictionary<string, List<string>> vanillaProgressionShopItems;
         private List<string> unplacedLocations;
         private List<string> unplacedItems;
         private List<string> unplacedProgression;
@@ -41,6 +44,9 @@ namespace RandomizerMod.Randomization
             nonShopItems = new Dictionary<string, string>();
             shopItems = new Dictionary<string, List<string>>();
 
+            vanillaProgressionLocations = new List<string>();
+            vanillaProgressionShopItems = new Dictionary<string, List<string>>();
+
             unplacedLocations = new List<string>();
             unplacedItems = new List<string>();
             unplacedProgression = new List<string>();
@@ -54,6 +60,31 @@ namespace RandomizerMod.Randomization
             foreach (string shopName in LogicManager.ShopNames)
             {
                 shopItems.Add(shopName, new List<string>());
+            }
+
+            //Set up vanillaLocations
+            //    Not as cool as all the hashset union stuff :(
+            foreach (string item in GetVanillaItems())
+            {
+                ReqDef itemDef = LogicManager.GetItemDef(item);
+                if (itemDef.type == ItemType.Shop && LogicManager.ShopNames.Contains(itemDef.shopName))
+                {
+                    //Add shop to locations
+                    if (!vanillaProgressionLocations.Contains(itemDef.shopName))
+                        vanillaProgressionLocations.Add(itemDef.shopName);
+
+                    //Add items to the shop items
+                    if (vanillaProgressionShopItems.ContainsKey(itemDef.shopName))
+                        //Shop's here, but item's not.
+                        vanillaProgressionShopItems[itemDef.shopName].Add(item);
+                    else
+                        //Shop's not here, so add the shop and the item to it.
+                        vanillaProgressionShopItems.Add(itemDef.shopName, new List<string>() { item });
+
+                    continue;
+                }
+
+                vanillaProgressionLocations.Add(item);
             }
 
             List<string> items = GetRandomizedItems().ToList();
@@ -96,6 +127,8 @@ namespace RandomizerMod.Randomization
             }
 
             reachableLocations = new HashSet<string>();
+
+            //LogVanillaItems();
         }
 
         private HashSet<string> GetRandomizedItems()
@@ -164,22 +197,68 @@ namespace RandomizerMod.Randomization
             return locations;
         }
 
-        public void QueueUpdate(string newThing, ProgressionManager _pm = null)
+        private HashSet<string> GetVanillaItems()
         {
-            if (_pm != null) pm = _pm;
+            HashSet<string> unrandoItems = new HashSet<string>();
 
-            pm.Add(newThing);
-            updateQueue.Enqueue(newThing);
+            bool prog(string val) => LogicManager.GetItemDef(val).progression;
+
+            if (!RandomizerMod.Instance.Settings.RandomizeDreamers) unrandoItems.UnionWith(LogicManager.GetItemsByPool("Dreamer").Where(prog));
+            if (!RandomizerMod.Instance.Settings.RandomizeSkills) unrandoItems.UnionWith(LogicManager.GetItemsByPool("Skill").Where(prog));
+            if (!RandomizerMod.Instance.Settings.RandomizeCharms) unrandoItems.UnionWith(LogicManager.GetItemsByPool("Charm").Where(prog));
+            if (!RandomizerMod.Instance.Settings.RandomizeKeys) unrandoItems.UnionWith(LogicManager.GetItemsByPool("Key").Where(prog));
+
+            return unrandoItems;
+        }
+
+        internal void ResetVanillaLocations(bool doUpdateQueue = true, ProgressionManager _pm = null)
+        {
+            if (_pm == null) _pm = pm;
+            vanillaLocationsObtained = new List<string>();
+            if (!doUpdateQueue) return;
+
+            foreach (string location in vanillaProgressionLocations)
+            {
+                if (_pm.CanGet(location))
+                    UpdateVanillaLocations(location, doUpdateQueue);
+            }
+            if (doUpdateQueue) UpdateReachableLocations();
+        }
+
+        internal void UpdateVanillaLocations(string location, bool doUpdateQueue = true, ProgressionManager _pm = null)
+        {
+            if (_pm == null) _pm = pm;
+            if (vanillaLocationsObtained.Contains(location))
+            {
+                return;
+            }
+
+            if (vanillaProgressionShopItems.ContainsKey(location))
+            { // shop in vanilla
+                foreach (string shopItem in vanillaProgressionShopItems[location])
+                {
+                    _pm.Add(shopItem);
+                    if (doUpdateQueue) updateQueue.Enqueue(shopItem);
+                }
+            }
+            else
+            { // item in vanilla
+                _pm.Add(location);
+                if (doUpdateQueue) updateQueue.Enqueue(location);
+            }
+
+            vanillaLocationsObtained.Add(location);
         }
 
         public void ResetReachableLocations()
         {
             reachableLocations = new HashSet<string>();
-            foreach (string location in randomizedLocations) if (pm.CanGet(location)) reachableLocations.Add(location);
+            foreach (string location in randomizedLocations.Union(vanillaProgressionLocations)) if (pm.CanGet(location)) reachableLocations.Add(location);
         }
-        public void UpdateReachableLocations(string newThing = null, ProgressionManager _pm = null)
+
+        public void UpdateReachableLocations(string newThing = null)//, ProgressionManager _pm = null)
         {
-            if (_pm != null) pm = _pm;
+            //if (_pm != null) pm = _pm;
             //if (_pm == null && RandomizerMod.Instance.Settings.RandomizeTransitions) GetReachableTransitions();
 
             if (newThing != null)
@@ -196,6 +275,7 @@ namespace RandomizerMod.Randomization
                     if (pm.CanGet(location))
                     {
                         reachableLocations.Add(location);
+                        if (vanillaProgressionLocations.Contains(location)) UpdateVanillaLocations(location);
                     }
                 }
                 if (RandomizerMod.Instance.Settings.RandomizeTransitions)
@@ -419,6 +499,21 @@ namespace RandomizerMod.Randomization
                     if (LogicManager.ShopNames.All(shop => !shopItems[shop].Contains(item)))
                     {
                         LogWarn("Found " + item + " in inventory, unable to trace origin.");
+                    }
+                }
+            }
+        }
+
+        private void LogVanillaItems()
+        {
+            foreach (string location in vanillaProgressionLocations)
+            {
+                Log($"Vanilla location: {location}");
+                if (vanillaProgressionShopItems.ContainsKey(location))
+                {
+                    foreach (string item in vanillaProgressionShopItems[location])
+                    {
+                        Log($"----Shop Item: {item}");
                     }
                 }
             }

@@ -14,7 +14,6 @@ namespace RandomizerMod.Randomization
 
         private static bool overflow;
         private static bool randomizationError;
-        public static bool Done { get; private set; }
         private static Random rand;
 
         public static void Randomize()
@@ -115,8 +114,6 @@ namespace RandomizerMod.Randomization
             SaveAllPlacements();
             SaveItemHints();
             if (RandomizerMod.Instance.Settings.CreateSpoilerLog) RandoLogger.LogAllToSpoiler(RandomizerMod.Instance.Settings.ItemPlacements, RandomizerMod.Instance.Settings._transitionPlacements.Select(kvp => (kvp.Key, kvp.Value)).ToArray());
-
-            Done = true;
         }
 
         private static void SetupTransitionVariables()
@@ -131,7 +128,6 @@ namespace RandomizerMod.Randomization
             im = new ItemManager(rand);
 
             overflow = false;
-            Done = false;
         }
 
         private static void BuildAreaSpanningTree()
@@ -564,35 +560,15 @@ namespace RandomizerMod.Randomization
             im.PlaceItem(tm.firstItem, "Fury_of_the_Fallen");
         }
 
-        private static void UpdateNonRandomizedProgression(ProgressionManager _pm = null)
-        {
-            HashSet<string> unrandoItems = new HashSet<string>();
-
-            bool prog(string val) => LogicManager.GetItemDef(val).progression;
-
-            if (!RandomizerMod.Instance.Settings.RandomizeDreamers) unrandoItems.UnionWith(LogicManager.GetItemsByPool("Dreamer").Where(prog));
-            if (!RandomizerMod.Instance.Settings.RandomizeSkills) unrandoItems.UnionWith(LogicManager.GetItemsByPool("Skill").Where(prog));
-            if (!RandomizerMod.Instance.Settings.RandomizeCharms) unrandoItems.UnionWith(LogicManager.GetItemsByPool("Charm").Where(prog));
-            if (!RandomizerMod.Instance.Settings.RandomizeKeys) unrandoItems.UnionWith(LogicManager.GetItemsByPool("Key").Where(prog));
-
-            if (unrandoItems.Count > 0)
-            {
-                foreach (string item in unrandoItems)
-                {
-                    im.QueueUpdate(item, _pm);
-                }
-                im.UpdateReachableLocations(_pm: _pm);
-            }
-        }
-
         private static void FirstPass()
         {
             Log("Beginning first pass of item placement...");
             if (!RandomizerMod.Instance.Settings.RandomizeTransitions)
             {
                 im.ResetReachableLocations();
-                UpdateNonRandomizedProgression();
+                im.ResetVanillaLocations();
             }
+
             while (true)
             {
                 string placeItem;
@@ -634,6 +610,8 @@ namespace RandomizerMod.Randomization
                         placeLocation = im.NextLocation();
                         break;
                 }
+
+                //Log($"i: {placeItem}, l: {placeLocation}, o: {overflow}, p: {LogicManager.GetItemDef(placeItem).progression}");
 
                 if (!overflow && !LogicManager.GetItemDef(placeItem).progression)
                 {
@@ -700,14 +678,16 @@ namespace RandomizerMod.Randomization
 
             ProgressionManager pm = new ProgressionManager();
 
-            HashSet<string> everything = new HashSet<string>(im.randomizedLocations);
+            HashSet<string> everything = new HashSet<string>(im.randomizedLocations.Union(im.vanillaProgressionLocations));
 
-            UpdateNonRandomizedProgression(pm);
             if (RandomizerMod.Instance.Settings.RandomizeTransitions)
             {
                 everything.UnionWith(LogicManager.TransitionNames());
                 tm.ResetReachableTransitions();
                 tm.UpdateReachableTransitions(_pm: pm);
+            } else
+            {
+                im.ResetVanillaLocations(false, pm);
             }
 
             int passes = 0;
@@ -715,12 +695,14 @@ namespace RandomizerMod.Randomization
             {
                 if (RandomizerMod.Instance.Settings.RandomizeTransitions) everything.ExceptWith(tm.reachableTransitions);
 
-                foreach (string location in im.randomizedLocations)
+                foreach (string location in im.randomizedLocations.Union(im.vanillaProgressionLocations))
                 {
                     if (everything.Contains(location) && pm.CanGet(location))
                     {
                         everything.Remove(location);
-                        if (LogicManager.ShopNames.Contains(location))
+                        if (im.vanillaProgressionLocations.Contains(location))
+                            im.UpdateVanillaLocations(location, false, pm);
+                        else if (LogicManager.ShopNames.Contains(location))
                         {
                             foreach (string newItem in ItemManager.shopItems[location])
                             {

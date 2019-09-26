@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using static RandomizerMod.LogHelper;
 using Object = UnityEngine.Object;
 using Random = System.Random;
+using RandomizerMod.Randomization;
 
 namespace RandomizerMod
 {
@@ -57,6 +58,8 @@ namespace RandomizerMod
             RandoMenuItem<bool> RandoDreamersBtn = new RandoMenuItem<bool>(back, new Vector2(900, 960), "Dreamers", true, false);
             RandoMenuItem<bool> RandoSkillsBtn = new RandoMenuItem<bool>(back, new Vector2(900, 880), "Skills", true, false);
             RandoMenuItem<bool> RandoCharmsBtn = new RandoMenuItem<bool>(back, new Vector2(900, 800), "Charms", true, false);
+            RandoCharmsBtn.SetSelection(true);
+            RandoCharmsBtn.Lock();
             RandoMenuItem<bool> RandoKeysBtn = new RandoMenuItem<bool>(back, new Vector2(900, 720), "Keys", true, false);
             RandoMenuItem<bool> RandoGeoChestsBtn = new RandoMenuItem<bool>(back, new Vector2(900, 640), "Geo Chests", false, true);
             RandoMenuItem<bool> RandoMaskBtn = new RandoMenuItem<bool>(back, new Vector2(900, 560), "Mask Shards", false, true);
@@ -185,7 +188,7 @@ namespace RandomizerMod
                 {
                     RandoDreamersBtn.Unlock();
                     RandoSkillsBtn.Unlock();
-                    RandoCharmsBtn.Unlock();
+                    //RandoCharmsBtn.Unlock();
                     RandoKeysBtn.Unlock();
                 }
                 else

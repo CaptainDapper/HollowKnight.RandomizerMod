@@ -84,7 +84,7 @@ namespace RandomizerMod
             if (sheetTitle == "Quirrel" && RandomizerMod.Instance.Settings.Quirrel && RandomizerMod.Instance.Settings.QuirrerHintCounter < 3 &&
                 new List<string> { "QUIRREL_MEET_TEMPLE_C", "QUIRREL_GREENPATH_1", "QUIRREL_QUEENSTATION_01", "QUIRREL_MANTIS_01", "QUIRREL_RUINS_1", "QUIRREL_SPA", "QUIRREL_MINES_2", "QUIRREL_FOGCANYON_A", "QUIRREL_EPILOGUE_A" }.Contains(key))
             {
-                return GetQuirrelHint(key);
+                return GetQuirrelHint(key, sheetTitle);
             }
             if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(sheetTitle))
             {
@@ -185,7 +185,7 @@ namespace RandomizerMod
             return firstMessage + secondMessage;
         }
 
-        public static string GetQuirrelHint(string key)
+        public static string GetQuirrelHint(string key, string sheetTitle)
         {
             RandomizerMod.Instance.Settings.QuirrerHintCounter++;
             string hint = string.Empty;
@@ -370,6 +370,9 @@ namespace RandomizerMod
                     LogWarn("Unknown key passed to GetQuirrelHint");
                     break;
             }
+            if (hint == string.Empty)
+                return Language.Language.GetInternal(key, sheetTitle);
+
             RandoLogger.LogHintToTracker(hint, jiji: false, quirrel: true);
             return hint;
         }

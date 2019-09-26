@@ -45,6 +45,7 @@ namespace RandomizerMod.Randomization
         public string boolName;
         public string sceneName;
         public string objectName;
+        public string shopName;
         public string altObjectName;
         public string fsmName;
         public bool replace;
@@ -75,8 +76,6 @@ namespace RandomizerMod.Randomization
         public string shopDescKey;
         public string shopSpriteKey;
         public string notchCost;
-
-        public string shopName;
 
         // Trinket variables
         public int trinketNum;
@@ -140,6 +139,7 @@ namespace RandomizerMod.Randomization
         public static int bitMaskMax;
         public static int essenceIndex;
         public static int grubIndex;
+        public static Dictionary<string, (int, int)> itemCountsByPool = null;
 
         public static string[] ItemNames => _items.Keys.ToArray();
 
@@ -297,6 +297,25 @@ namespace RandomizerMod.Randomization
             }
 
             return def;
+        }
+
+        public static (int, int) GetPoolCount(string poolName)
+        {
+            //Lazy init
+            if (itemCountsByPool == null)
+            {
+                itemCountsByPool = new Dictionary<string, (int, int)>();
+                foreach (string pool in _poolIndexedItems.Keys)
+                {
+                    int poolCount = _poolIndexedItems[pool].Count();
+                    int progCount = _poolIndexedItems[pool].Where(val => GetItemDef(val).progression).Count();
+                    itemCountsByPool.Add(pool, (progCount, poolCount));
+                    Log($"Pool '{pool}' has {progCount} progression out of {poolCount} total items.");
+                }
+            }
+
+            //Actual Function
+            return itemCountsByPool[poolName];
         }
 
         public static bool ParseProcessedLogic(string item, int[] obtained)

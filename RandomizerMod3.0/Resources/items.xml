@@ -518,6 +518,7 @@
     <boolName>gotCharm_1</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -534,6 +535,7 @@
     <boolName>gotCharm_2</boolName>
     <sceneName>Room_mapper</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Iselda</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -569,6 +571,7 @@
     <boolName>gotCharm_4</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -622,6 +625,7 @@
     <boolName>gotCharm_7</boolName>
     <sceneName>Room_Charm_Shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Salubra</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -638,6 +642,7 @@
     <boolName>gotCharm_8</boolName>
     <sceneName>Room_Charm_Shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Salubra</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -744,6 +749,7 @@
     <boolName>gotCharm_14</boolName>
     <sceneName>Room_Charm_Shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Salubra</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -760,6 +766,7 @@
     <boolName>gotCharm_15</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly_(Key)</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -812,6 +819,7 @@
     <boolName>gotCharm_18</boolName>
     <sceneName>Room_Charm_Shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Salubra</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -828,6 +836,7 @@
     <boolName>gotCharm_19</boolName>
     <sceneName>Room_Charm_Shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Salubra</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -839,6 +848,7 @@
     <shopSpriteKey>Charms.19</shopSpriteKey>
     <areaName>Forgotten_Crossroads</areaName>
     <notchCost>charmCost_19</notchCost>
+    
   </item>
   <item name="Soul_Catcher">
     <boolName>gotCharm_20</boolName>
@@ -896,6 +906,7 @@
     <boolName>gotCharm_23</boolName>
     <sceneName>Fungus2_26</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Leg_Eater</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -912,6 +923,7 @@
     <boolName>gotCharm_24</boolName>
     <sceneName>Fungus2_26</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Leg_Eater</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -928,6 +940,7 @@
     <boolName>gotCharm_25</boolName>
     <sceneName>Fungus2_26</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Leg_Eater</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -1193,6 +1206,7 @@
     <boolName>gotCharm_37</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly_(Key)</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -1284,6 +1298,7 @@
     <boolName>hasLantern</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -1324,6 +1339,7 @@
     <boolName>RandomizerMod.SlySimpleKey</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -1420,6 +1436,7 @@
     <boolName>RandomizerMod.hasWhiteKey</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly_(Key)</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -1525,6 +1542,7 @@
     <boolName>RandomizerMod.MaskShardSly1</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -1542,6 +1560,7 @@
     <boolName>RandomizerMod.MaskShardSly2</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -1559,6 +1578,7 @@
     <boolName>RandomizerMod.MaskShardSly3</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly_(Key)</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -1576,6 +1596,7 @@
     <boolName>RandomizerMod.MaskShardSly4</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly_(Key)</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -1792,6 +1813,7 @@
     <boolName>RandomizerMod.VesselFragmentSly1</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -1809,6 +1831,7 @@
     <boolName>RandomizerMod.VesselFragmentSly2</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly_(Key)</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
@@ -2267,6 +2290,7 @@
     <boolName>RandomizerMod.RancidEggSly</boolName>
     <sceneName>Room_shop</sceneName>
     <objectName>Shop Menu</objectName>
+    <shopName>Sly</shopName>
     <replace>false</replace>
     <itemLogic></itemLogic>
     <areaLogic></areaLogic>
