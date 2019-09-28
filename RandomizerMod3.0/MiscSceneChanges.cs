@@ -632,7 +632,7 @@ namespace RandomizerMod
                     }
                     break;
                 case SceneNames.Room_Mansion:
-                    LanguageStringManager.SetString("Prompts", "XUN_OFFER", "Accept the Gift, even knowing you'll only get a lousy " + RandomizerMod.Instance.Settings.ItemPlacements.FirstOrDefault(pair => pair.Item2 == "Mask_Shard-Grey_Mourner").Item1.Split('-').First().Replace('_', ' ') + "?");
+                    LanguageStringManager.SetString("Prompts", "XUN_OFFER", "Accept the Gift, even knowing you'll get a " + RandomizerMod.Instance.Settings.ItemPlacements.FirstOrDefault(pair => pair.Item2 == "Mask_Shard-Grey_Mourner").Item1.Split('-').First().Replace('_', ' ') + "?");
                     if (PlayerData.instance.xunFlowerGiven)
                     {
                         PlayerData.instance.xunRewardGiven = true;

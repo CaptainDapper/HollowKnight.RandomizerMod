@@ -176,6 +176,8 @@ namespace RandomizerMod
             try
             {
                 Randomizer.Randomize();
+
+                RandoLogger.UpdateHelperLog();
             }
             catch (Exception e)
             {

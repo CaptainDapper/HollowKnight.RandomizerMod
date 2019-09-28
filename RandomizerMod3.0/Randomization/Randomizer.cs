@@ -11,6 +11,7 @@ namespace RandomizerMod.Randomization
     {
         private static ItemManager im;
         private static TransitionManager tm;
+        private static VanillaManager vm { get { return VanillaManager.Instance; } }
 
         private static bool overflow;
         private static bool randomizationError;
@@ -113,7 +114,9 @@ namespace RandomizerMod.Randomization
         {
             SaveAllPlacements();
             SaveItemHints();
-            if (RandomizerMod.Instance.Settings.CreateSpoilerLog) RandoLogger.LogAllToSpoiler(RandomizerMod.Instance.Settings.ItemPlacements, RandomizerMod.Instance.Settings._transitionPlacements.Select(kvp => (kvp.Key, kvp.Value)).ToArray());
+            //No vanilla'd loctions in the spoiler log, please!
+            (string, string)[] itemPairs = RandomizerMod.Instance.Settings.ItemPlacements.Except(VanillaManager.Instance.ItemPlacements).ToArray();
+            if (RandomizerMod.Instance.Settings.CreateSpoilerLog) RandoLogger.LogAllToSpoiler(itemPairs, RandomizerMod.Instance.Settings._transitionPlacements.Select(kvp => (kvp.Key, kvp.Value)).ToArray());
         }
 
         private static void SetupTransitionVariables()
@@ -566,7 +569,7 @@ namespace RandomizerMod.Randomization
             if (!RandomizerMod.Instance.Settings.RandomizeTransitions)
             {
                 im.ResetReachableLocations();
-                im.ResetVanillaLocations();
+                vm.ResetReachableLocations();
             }
 
             while (true)
@@ -678,7 +681,7 @@ namespace RandomizerMod.Randomization
 
             ProgressionManager pm = new ProgressionManager();
 
-            HashSet<string> everything = new HashSet<string>(im.randomizedLocations.Union(im.vanillaProgressionLocations));
+            HashSet<string> everything = new HashSet<string>(im.randomizedLocations.Union(vm.progressionLocations));
 
             if (RandomizerMod.Instance.Settings.RandomizeTransitions)
             {
@@ -687,7 +690,7 @@ namespace RandomizerMod.Randomization
                 tm.UpdateReachableTransitions(_pm: pm);
             } else
             {
-                im.ResetVanillaLocations(false, pm);
+                vm.ResetReachableLocations(false, pm);
             }
 
             int passes = 0;
@@ -695,29 +698,25 @@ namespace RandomizerMod.Randomization
             {
                 if (RandomizerMod.Instance.Settings.RandomizeTransitions) everything.ExceptWith(tm.reachableTransitions);
 
-                foreach (string location in im.randomizedLocations.Union(im.vanillaProgressionLocations))
+                foreach (string location in im.randomizedLocations.Union(vm.progressionLocations).Where(loc => everything.Contains(loc) && pm.CanGet(loc)))
                 {
-                    if (everything.Contains(location) && pm.CanGet(location))
+                    everything.Remove(location);
+                    if (vm.progressionLocations.Contains(location)) vm.UpdateVanillaLocations(location, false, pm);
+                    else if (LogicManager.ShopNames.Contains(location))
                     {
-                        everything.Remove(location);
-                        if (im.vanillaProgressionLocations.Contains(location))
-                            im.UpdateVanillaLocations(location, false, pm);
-                        else if (LogicManager.ShopNames.Contains(location))
+                        foreach (string newItem in ItemManager.shopItems[location])
                         {
-                            foreach (string newItem in ItemManager.shopItems[location])
+                            if (LogicManager.GetItemDef(newItem).progression)
                             {
-                                if (LogicManager.GetItemDef(newItem).progression)
-                                {
-                                    pm.Add(newItem);
-                                    if (RandomizerMod.Instance.Settings.RandomizeTransitions) tm.UpdateReachableTransitions(newItem, true, pm);
-                                }
+                                pm.Add(newItem);
+                                if (RandomizerMod.Instance.Settings.RandomizeTransitions) tm.UpdateReachableTransitions(newItem, true, pm);
                             }
                         }
-                        else if (LogicManager.GetItemDef(ItemManager.nonShopItems[location]).progression)
-                        {
-                            pm.Add(ItemManager.nonShopItems[location]);
-                            if (RandomizerMod.Instance.Settings.RandomizeTransitions) tm.UpdateReachableTransitions(ItemManager.nonShopItems[location], true, pm);
-                        }
+                    }
+                    else if (LogicManager.GetItemDef(ItemManager.nonShopItems[location]).progression)
+                    {
+                        pm.Add(ItemManager.nonShopItems[location]);
+                        if (RandomizerMod.Instance.Settings.RandomizeTransitions) tm.UpdateReachableTransitions(ItemManager.nonShopItems[location], true, pm);
                     }
                 }
 
@@ -756,6 +755,12 @@ namespace RandomizerMod.Randomization
             foreach (KeyValuePair<string, string> kvp in ItemManager.nonShopItems)
             {
                 RandomizerMod.Instance.Settings.AddItemPlacement(kvp.Value, kvp.Key);
+            }
+
+            //Vanilla Item Placements (for RandomizerActions, Hints, Logs, etc)
+            foreach ((string, string) pair in vm.ItemPlacements)
+            {
+                RandomizerMod.Instance.Settings.AddItemPlacement(pair.Item1, pair.Item2);
             }
         }
 
